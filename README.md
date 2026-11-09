@@ -79,3 +79,30 @@ python3 probar_deteccion.py
 | `--espera` | 5 | Segundos antes de repetir el mismo texto |
 | `--confirmar N` | 1 | Lecturas iguales seguidas antes de anotar |
 | `--imagen RUTA` | | Una foto y termina |
+
+## Escáner solo con OpenCV (`scanner_opencv.py`)
+
+`scanner.py` no se toca: sigue siendo el de pyzbar, con QR. Este otro script usa únicamente `cv2.barcode.BarcodeDetector.detectAndDecode`, sin pyzbar y sin preprocesar el fotograma. Sirve para compararlo con el tutorial que pide el mismo código en unos 30 fotogramas seguidos.
+
+Lee **solo códigos 1D de tipo EAN y UPC**. No lee QR. En OpenCV 4.5–4.7 tampoco lee Code 128 ni Code 39. El registro va a `registro_opencv.csv` (las mismas columnas: fecha, hora, tipo, texto), aparte de `registro_codigos.csv`, para no mezclar las dos pruebas.
+
+El detector cambió de sitio según la versión:
+
+- **OpenCV 4.8 o más nuevo:** viene en el paquete principal (`python3-opencv` reciente, o `pip install "opencv-python>=4.8"`).
+- **OpenCV 4.5, 4.6 y 4.7:** está en el paquete contrib, no en `opencv-python` a secas. En la Pi: `sudo apt install python3-opencv` (algunas imágenes ya lo traen compilado con contrib). Si no aparece: `pip install "opencv-contrib-python>=4.5,<4.8"`. No instales `opencv-python` y `opencv-contrib-python` a la vez.
+
+Si el módulo no está, el script sale con un mensaje que dice cuál de los dos instalar. `detectAndDecode` a veces devuelve 4 valores `(ok, textos, tipos, puntos)` y a veces 3 `(ok, textos, puntos)`; el script acepta los dos.
+
+```bash
+python3 scanner_opencv.py --headless
+python3 scanner_opencv.py --headless --camara 0 --ancho 1280 --alto 720 --confirmar 30
+python3 scanner_opencv.py --imagen pruebas/ean13.png
+```
+
+Analiza **todos** los fotogramas: si se saltan, la racha de 30 se rompe. `--espera` sigue en 5 segundos antes de repetir el mismo texto. En la ventana, cuando no usas `--headless`, dibuja el polígono y el texto con el avance `(12/30)`.
+
+En OpenCV 4.6 de Debian/Ubuntu, `detectAndDecode` devolvió vacío con los EAN y Code 128 de `pruebas/`, así que en la Pi puede pasar lo mismo si apt trae esa versión. No es que el script se haya saltado la llamada: el detector de esa versión a menudo no acierta sin un modelo de superresolución que el paquete no incluye. Para leer de verdad en la Pi, `scanner.py` sigue siendo el que hay que usar. Este es el de la comparación.
+
+```bash
+python3 probar_scanner_opencv.py
+```
