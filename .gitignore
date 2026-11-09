@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+registro_codigos.csv
+registro_opencv.csv
