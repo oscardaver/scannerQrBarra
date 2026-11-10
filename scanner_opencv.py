@@ -6,8 +6,8 @@ Usa cv2.barcode.BarcodeDetector.detectAndDecode. No usa pyzbar ni
 preprocesado. No lee QR: el detector nativo cubre EAN y UPC.
 
 El mismo texto tiene que salir en varios fotogramas seguidos antes de
-anotarse, para no guardar lecturas sueltas. El registro va a
-registro_opencv.csv, aparte del de scanner.py, para poder comparar.
+anotarse, para no guardar lecturas sueltas. El registro es el mismo
+CSV de scanner.py: registro_codigos.csv.
 
 OpenCV 4.8 o más nuevo trae el detector en el paquete principal.
 En 4.5, 4.6 y 4.7 está en opencv-contrib (no en opencv-python a secas).
@@ -22,7 +22,7 @@ from datetime import datetime
 import cv2
 import numpy as np
 
-ARCHIVO_CSV = "registro_opencv.csv"
+ARCHIVO_CSV = "registro_codigos.csv"
 ANCHO, ALTO = 1280, 720
 ESPERA_REPETIDO = 5
 CONFIRMAR_DEFECTO = 30
@@ -498,7 +498,7 @@ def main():
     ap.add_argument("--mjpg", action="store_true",
                     help="pide MJPEG a la cámara (menos USB; a veces más compresión)")
     ap.add_argument("--csv", default=ARCHIVO_CSV,
-                    help=f"registro, aparte del de scanner.py (default {ARCHIVO_CSV})")
+                    help=f"CSV donde se anota cada código (default {ARCHIVO_CSV})")
     ap.add_argument("--espera", type=float, default=ESPERA_REPETIDO,
                     help="segundos antes de volver a anotar el mismo texto")
     ap.add_argument("--confirmar", type=int, default=CONFIRMAR_DEFECTO,
